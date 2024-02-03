@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace WPFChartControl.Models
 {
-    public class TestScroe
+    public class TestScore
     {
         public int Id { get; set; }
         public DateTime Date { get; set; }

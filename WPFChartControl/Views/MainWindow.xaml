@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:WPFChartControl"
+        xmlns:oxy="http://oxyplot.org/wpf"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Window.Resources>
@@ -21,6 +22,8 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
+        <oxy:PlotView Model="{Binding PlotModel}"/>
+
         <StackPanel Grid.Row="1" Orientation="Horizontal">
             <ComboBox x:Name="cbSubject" SelectedIndex="0">
                 <ComboBoxItem Content="국어"/>
@@ -28,7 +31,8 @@
                 <ComboBoxItem Content="영어"/>
             </ComboBox>
             <Button x:Name="btnLookUp" 
-                    Content="조회">
+                    Content="조회"
+                    Command="{Binding LoadOxyPlotCommand}">
 
             </Button>
         </StackPanel>

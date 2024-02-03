@@ -9,7 +9,7 @@ namespace WPFChartControl.Models
     public class StudentWithScore
     {
         public Student Student { get; set; } = default!;
-        public TestScroe Score { get; set; } = default!;
+        public TestScore Score { get; set; } = default!;
 
         private static IEnumerable<StudentWithScore>? _joinedData;
 
@@ -27,19 +27,23 @@ namespace WPFChartControl.Models
             };
 
             Random random = new Random();
-            List<TestScroe> testScores = new List<TestScroe>();
+            List<TestScore> testScores = new List<TestScore>();
 
-            for (int i = 1; i <= students.Count; i++)
+            foreach (Student student in students)
             {
-                testScores.Add(new TestScroe
+                for (int i = 1; i <= 5; i++)
                 {
-                    Id = i,
-                    Date = DateTime.Today,
-                    EngScore = random.Next(0, 101),
-                    KorScore = random.Next(0, 101),
-                    MathScore = random.Next(0, 101),
-                    StudentId = students[i].Id
-                });
+                    DateTime date = new DateTime(2023, i, 1);
+                    testScores.Add(new TestScore
+                    {
+                        Id = i,
+                        Date = date,
+                        KorScore = random.Next(0, 101),
+                        MathScore = random.Next(0, 101),
+                        EngScore = random.Next(0, 101),
+                        StudentId = student.Id,
+                    });
+                }
             }
 
             _joinedData = from student in students
