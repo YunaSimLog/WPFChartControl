@@ -32,9 +32,8 @@
             </ComboBox>
             <Button x:Name="btnLookUp" 
                     Content="조회"
-                    Command="{Binding LoadOxyPlotCommand}">
-
-            </Button>
+                    Command="{Binding LoadOxyPlotCommand}"
+                    CommandParameter="{Binding Text, ElementName=cbSubject}"/>
         </StackPanel>
     </Grid>
 </Window>

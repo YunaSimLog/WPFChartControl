@@ -19,7 +19,6 @@ namespace WPFChartControl.ViewModels
     {
         public MainViewModel()
         {
-            SetPlotModel();
         }
 
         Func<TestScore, int> GetScoreFunc(string subject)
@@ -42,14 +41,15 @@ namespace WPFChartControl.ViewModels
         private void LoadOxyPlot(string subject)
         {
             Func<TestScore, int> scoreFunc = GetScoreFunc(subject);
+            SetPlotModel(subject,scoreFunc);
         }
 
-        private void SetPlotModel()
+        private void SetPlotModel(string subject, Func<TestScore,int> testScoreFunc)
         {
             IEnumerable<StudentWithScore> data = StudentWithScore.GetSeedDatas();
 
             // PlotModel 생성
-            var plotManager = new OxyPlotManager("국어 점수");
+            var plotManager = new OxyPlotManager($"{subject} 점수");
 
             // X축 생성
             plotManager.SetDataTimeAxisX("일자", "yyyy-MM-dd");
@@ -69,12 +69,14 @@ namespace WPFChartControl.ViewModels
             foreach (var studentData in studentGroup)
             {
                 var dataPoint = studentData.Select(x =>
-                    new DataPoint(DateTimeAxis.ToDouble(x.Score.Date), x.Score.KorScore));
+                    new DataPoint(DateTimeAxis.ToDouble(x.Score.Date), testScoreFunc(x.Score)));
                 plotManager.AddLineSeriesDataPoints(studentData.Key.Name, dataPoint);
                 plotManager.SetNextColor();
             }
 
             this.PlotModel = plotManager.PlotModel;
+
+            OnPropertyChanged(nameof(PlotModel));
         }
 
         public PlotModel PlotModel { get; set; }
