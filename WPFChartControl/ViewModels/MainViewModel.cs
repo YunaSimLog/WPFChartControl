@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using OxyPlot;
 using OxyPlot.Axes;
+using OxyPlot.Legends;
 using OxyPlot.Series;
 using WpfBase;
 using WPFChartControl.Models;
@@ -67,20 +68,34 @@ namespace WPFChartControl.ViewModels
                 Maximum = 100,
             });
 
+            // Legend 추가
+            var legend = new Legend
+            {
+                LegendPlacement = LegendPlacement.Outside,
+                LegendPosition = LegendPosition.RightTop,
+                LegendOrientation = LegendOrientation.Vertical,
+            };
+
+            PlotModel.Legends.Add(legend);
+
             // 데이터 추가
             var studentGroup = data.GroupBy(x => x.Student);
+            var oxyColors = OxyPalettes.HueDistinct(studentGroup.Count()).Colors;
+            int oxyColorIndex = 0;
 
             foreach (var studentData in studentGroup)
             {
+                var color = oxyColors[oxyColorIndex];
                 var lineSeries = new LineSeries
                 {
                     Title = studentData.Key.Name,
-                    Color = OxyColors.Blue,
-                    MarkerStroke = OxyColors.Blue,
+                    Color = color,
+                    MarkerStroke = color,
                     StrokeThickness = 2,
                     MarkerType = MarkerType.Circle,
                     MarkerSize = 4
                 };
+                oxyColorIndex++;
 
                 foreach (var std in studentData)
                 {
