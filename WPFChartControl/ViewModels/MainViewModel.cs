@@ -1,4 +1,5 @@
 ﻿using System;
+using System.CodeDom;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,6 +10,7 @@ using OxyPlot.Axes;
 using OxyPlot.Legends;
 using OxyPlot.Series;
 using WpfBase;
+using WPFChartControl.Commons;
 using WPFChartControl.Models;
 
 namespace WPFChartControl.ViewModels
@@ -40,72 +42,39 @@ namespace WPFChartControl.ViewModels
         private void LoadOxyPlot(string subject)
         {
             Func<TestScore, int> scoreFunc = GetScoreFunc(subject);
-            //SetPlotModel(subject, scoreFunc);
         }
 
-        private void SetPlotModel(/*string subject, Func<TestScroe, int> testScoreFunc*/)
+        private void SetPlotModel()
         {
             IEnumerable<StudentWithScore> data = StudentWithScore.GetSeedDatas();
 
             // PlotModel 생성
-            PlotModel = new PlotModel() {Title = "국어 점수"};
+            var plotManager = new OxyPlotManager("국어 점수");
 
             // X축 생성
-            PlotModel.Axes.Add(new DateTimeAxis
-            {
-                Position = AxisPosition.Bottom,
-                Title = "일자",
-                StringFormat ="yyyy-MM-dd",
-                MajorGridlineStyle = LineStyle.Solid,
-            });
+            plotManager.SetDataTimeAxisX("일자", "yyyy-MM-dd");
 
             // Y축 생성
-            PlotModel.Axes.Add(new LinearAxis
-            {
-                Position = AxisPosition.Left,
-                Title = "점수",
-                Minimum = 0,
-                Maximum = 100,
-            });
+            plotManager.SetAxisY("점수");
 
             // Legend 추가
-            var legend = new Legend
-            {
-                LegendPlacement = LegendPlacement.Outside,
-                LegendPosition = LegendPosition.RightTop,
-                LegendOrientation = LegendOrientation.Vertical,
-            };
-
-            PlotModel.Legends.Add(legend);
+            plotManager.SetLegend();
 
             // 데이터 추가
             var studentGroup = data.GroupBy(x => x.Student);
-            var oxyColors = OxyPalettes.HueDistinct(studentGroup.Count()).Colors;
-            int oxyColorIndex = 0;
+
+            // 학생별 색상 추가
+            plotManager.SetOxyColors(studentGroup.Count());
 
             foreach (var studentData in studentGroup)
             {
-                var color = oxyColors[oxyColorIndex];
-                var lineSeries = new LineSeries
-                {
-                    Title = studentData.Key.Name,
-                    Color = color,
-                    MarkerStroke = color,
-                    StrokeThickness = 2,
-                    MarkerType = MarkerType.Circle,
-                    MarkerSize = 4
-                };
-                oxyColorIndex++;
-
-                foreach (var std in studentData)
-                {
-                    lineSeries.Points.Add(new DataPoint(DateTimeAxis.ToDouble(std.Score.Date), std.Score.KorScore));
-                }
-
-                PlotModel.Series.Add(lineSeries);
+                var dataPoint = studentData.Select(x =>
+                    new DataPoint(DateTimeAxis.ToDouble(x.Score.Date), x.Score.KorScore));
+                plotManager.AddLineSeriesDataPoints(studentData.Key.Name, dataPoint);
+                plotManager.SetNextColor();
             }
 
-            this.PlotModel = PlotModel;
+            this.PlotModel = plotManager.PlotModel;
         }
 
         public PlotModel PlotModel { get; set; }
